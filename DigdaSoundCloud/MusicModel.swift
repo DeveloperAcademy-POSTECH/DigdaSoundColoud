@@ -29,12 +29,13 @@ class MusicModel: ObservableObject {
         playing = false
     }
     
+    
     var duration: Double {
-        return audioPlayer.currentTime ?? 0
+        return audioPlayer.currentTime
     }
     
-    private func calculateProgress(currentTime: Double) -> Float {
-        return Float(currentTime / duration)
+    func calculateProgress(duration: Double) -> Float {
+        return Float(duration / audioPlayer.duration)
     }
     
     func seek(time: TimeInterval) {

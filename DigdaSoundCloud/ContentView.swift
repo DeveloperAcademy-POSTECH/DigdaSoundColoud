@@ -56,28 +56,94 @@ struct CommentView: View {
                 .foregroundColor(Color(red:65/255, green:65/255, blue:65/255))
             RoundedRectangle(cornerRadius: 10)
                 .foregroundColor(Color(red:65/255, green:65/255, blue:65/255))
-        }.frame(height: 40)
+        }
+        .frame(height: 40)
     }
 }
 
-//TODO: JUN! 재생 상태에 따라 파동인지 바 형태인지 바꿔주시면 됩니다!
+struct shape: Shape {
+    var size: Double
+    let width = 8.0
+    
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath()
+        path.move(to: CGPoint(x: 0, y: 0))
+        path.addCurve(to: CGPoint(x: width, y: 0), controlPoint1: CGPoint(x: 0, y: -width), controlPoint2: CGPoint(x: width, y: -width))
+        path.addLine(to: CGPoint(x: width, y: size))
+        path.addCurve(to: CGPoint(x: 0, y: size), controlPoint1: CGPoint(x: width, y: size + width), controlPoint2: CGPoint(x: 0, y: size + width))
+        path.addLine(to: CGPoint(x: 0, y: 0))
+        path.close()
+        return Path(path.cgPath)
+    }
+}
+
 struct PlayBarView: View {
+    @ObservedObject var musicModel: MusicModel
+    
+    let barCount = 26
+    let arr: [Double] = [8.0, 16.0, 24.0, 32.0, 40.0]
+    
+    @State var variation = 0.0
+    @State var time: Int = 0
+    
+    @State var shapeSize: [Double] = []
+    @State var lastRemaining: Float = 0.0
+    
+    init(musicModel: MusicModel) {
+        self.musicModel = musicModel
+        self.variation = variation
+        self.time = time
+        self._shapeSize = State(initialValue: (0..<self.barCount).map { _ in self.arr[Int.random(in: 0...4)] })
+    }
+    
     
     var body: some View {
-        VStack{
-            RoundedRectangle(cornerRadius: 3)
-                .frame(width: 332, height: 4)
-                .foregroundColor(.white)
+        HStack(){
+            ForEach(0..<barCount, id: \.self) { i in
+                shape(size: shapeSize[i])
+                    .fill(i == time ? LinearGradient(
+                        gradient: .init(colors: [.orange, .gray]),
+                        startPoint: UnitPoint(x:variation*2-0.5, y:0.5),
+                        endPoint: UnitPoint(x:variation*2+0.5, y:0.5)
+                    ) : (i < time ? LinearGradient(
+                        gradient: .init(colors: [.orange, .orange]),
+                        startPoint: .top,
+                        endPoint: .bottom
+                      ) : LinearGradient(
+                        gradient: .init(colors: [.gray, .gray]),
+                        startPoint: .top,
+                        endPoint: .bottom
+                      )))
+                    .offset(x:0, y:(40-20-shapeSize[i])/2)
+            }
+        }.onAppear{
+            
+            Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { _ in
+                time = Int(musicModel.calculateProgress(duration: musicModel.duration) * Float(barCount))
+                let remaining = (musicModel.calculateProgress(duration: musicModel.duration) * Float(barCount)).truncatingRemainder(dividingBy:1)
+                withAnimation(.linear(duration: 0.01)){
+                    if lastRemaining < remaining{
+                        variation = Double(remaining)
+                    }
+                }
+                if lastRemaining > remaining {
+                    variation = 0.0
+                    lastRemaining = 0.0
+                }
+                lastRemaining = remaining
+                print(variation)
+            }
         }
     }
 }
 
 struct PlayView: View {
     
+    @StateObject var musicModel: MusicModel
     var body: some View {
         VStack(spacing: 25){
                 CommentView()
-                PlayBarView()
+                PlayBarView(musicModel: musicModel)
                 HStack{
                     Text("0:00").font(.system(size: 12))
                     Spacer()
@@ -121,7 +187,7 @@ struct AlbumBackgroundView: View{
 }
 
 struct ContentView: View {
-    @StateObject var musicModel: MusicModel
+    @ObservedObject var musicModel: MusicModel
     
     // should be true
     @State var play: Bool = false
@@ -132,17 +198,14 @@ struct ContentView: View {
             VStack(spacing: 25){
                 InfoView()
                 Spacer()
-                
                 if musicModel.playing {
                     AlbumView(musicModel: musicModel)
                 } else {
                     PauseView(musicModel: musicModel)
                 }
-
-                PlayView()
+                PlayView(musicModel: musicModel)
                 Spacer()
                 IconView()
-                
             }.padding([.horizontal], 20)
             .padding([.top], 47)
             .padding([.bottom], 34)

@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct DigdaSoundCloudApp: App {
+    
+    @StateObject var musicModel: MusicModel = MusicModel(sound: "mercury")
+    
     var body: some Scene {
         WindowGroup {
-            ContentView(musicModel: MusicModel(sound: "mercury"))
+            ContentView(musicModel: musicModel)
         }
     }
 }
