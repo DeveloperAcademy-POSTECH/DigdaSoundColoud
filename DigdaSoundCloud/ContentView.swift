@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AVKit
 
 let WIDTH: CGFloat = 327 // edit please
 
@@ -87,37 +88,56 @@ struct PlayView: View {
 }
 
 struct AlbumView: View {
+    
+    @ObservedObject var musicModel: MusicModel
     var body: some View {
         
-        Image("albumCover").resizable()
-            .frame(width: 327, height: 327)
-            .overlay{
-                Rectangle()
-                    .stroke(.white, lineWidth: 1)
-            }.shadow(color: .white, radius: 4, y: 2)
-            
-        
+            Image("albumCover").resizable()
+                .frame(width: 327, height: 327)
+                .overlay{
+                    Rectangle()
+                        .stroke(.white, lineWidth: 1)
+                }.shadow(color: .white, radius: 4, y: 2)
+            .onTapGesture {
+                withAnimation(.linear(duration: 0.2)){
+                    musicModel.pause()
+                }
+            }.onAppear(perform: {
+                withAnimation(.linear) {
+                    musicModel.play()
+                }
+            })
+    
     }
 }
 
 struct AlbumBackgroundView: View{
     var body: some View {
-        Image("albumCover").resizable().scaledToFill().blur(radius: 10, opaque: true)
-            .overlay{
-                LinearGradient(colors: [Color.black.opacity(0.2), Color.black.opacity(0.05)], startPoint: .top, endPoint: .bottom)
-                
-            }
+            Image("albumCover").resizable().scaledToFill().blur(radius: 10, opaque: true)
+                .overlay{
+                    LinearGradient(colors: [Color.black.opacity(0.2), Color.black.opacity(0.05)], startPoint: .top, endPoint: .bottom)
+                }
     }
 }
 
 struct ContentView: View {
+    @StateObject var musicModel: MusicModel
+    
+    // should be true
+    @State var play: Bool = false
+    
     var body: some View {
         ZStack{
             AlbumBackgroundView().ignoresSafeArea()
             VStack(spacing: 25){
                 InfoView()
                 Spacer()
-                AlbumView()
+                
+                if musicModel.playing {
+                    AlbumView(musicModel: musicModel)
+                } else {
+                    PauseView(musicModel: musicModel)
+                }
 
                 PlayView()
                 Spacer()
@@ -131,7 +151,43 @@ struct ContentView: View {
 }
 
 struct ContentView_Previews: PreviewProvider {
+    
     static var previews: some View {
-        ContentView()
+        ContentView(musicModel: MusicModel(sound: "mercury"))
+    }
+}
+
+struct PauseView: View {
+    
+    @ObservedObject var musicModel: MusicModel
+    var body: some View {
+        
+        HStack{
+            
+            Image(systemName: "backward.fill")
+                .foregroundColor(.white)
+                .font(.system(size: 30))
+                .fontWeight(.heavy)
+            
+            Spacer()
+ 
+            Image(systemName: "play.circle.fill")
+                .foregroundColor(.white)
+                .font(.system(size: 30))
+                .fontWeight(.heavy)
+                .onTapGesture {
+                        musicModel.playing.toggle()
+                }
+            
+            Spacer()
+            
+            Image(systemName: "forward.fill")
+                .foregroundColor(.white)
+                .font(.system(size: 30))
+                .fontWeight(.heavy)
+            
+            
+        }.frame(width: WIDTH + 20, height: WIDTH)
+
     }
 }

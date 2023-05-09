@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		68EBC3542A06BDE2006AD5C2 /* mercury.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 68EBC3532A06BDE2006AD5C2 /* mercury.mp3 */; };
 		68F7D2912A06410300D7B874 /* DigdaSoundCloudApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68F7D2902A06410300D7B874 /* DigdaSoundCloudApp.swift */; };
 		68F7D2932A06410300D7B874 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68F7D2922A06410300D7B874 /* ContentView.swift */; };
 		68F7D2952A06410500D7B874 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 68F7D2942A06410500D7B874 /* Assets.xcassets */; };
@@ -15,6 +16,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		68EBC3532A06BDE2006AD5C2 /* mercury.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = mercury.mp3; sourceTree = "<group>"; };
 		68F7D28D2A06410300D7B874 /* DigdaSoundCloud.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DigdaSoundCloud.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		68F7D2902A06410300D7B874 /* DigdaSoundCloudApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DigdaSoundCloudApp.swift; sourceTree = "<group>"; };
 		68F7D2922A06410300D7B874 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -58,6 +60,7 @@
 				68F7D2942A06410500D7B874 /* Assets.xcassets */,
 				68F7D2962A06410500D7B874 /* Preview Content */,
 				68F7D29E2A0670ED00D7B874 /* MusicModel.swift */,
+				68EBC3532A06BDE2006AD5C2 /* mercury.mp3 */,
 			);
 			path = DigdaSoundCloud;
 			sourceTree = "<group>";
@@ -128,6 +131,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				68EBC3542A06BDE2006AD5C2 /* mercury.mp3 in Resources */,
 				68F7D2982A06410500D7B874 /* Preview Assets.xcassets in Resources */,
 				68F7D2952A06410500D7B874 /* Assets.xcassets in Resources */,
 			);

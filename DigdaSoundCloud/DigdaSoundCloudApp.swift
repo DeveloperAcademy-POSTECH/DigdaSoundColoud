@@ -11,7 +11,7 @@ import SwiftUI
 struct DigdaSoundCloudApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(musicModel: MusicModel(sound: "mercury"))
         }
     }
 }
