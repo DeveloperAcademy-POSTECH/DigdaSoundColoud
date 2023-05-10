@@ -120,6 +120,7 @@ struct PlayBarView: View {
     @State var variation = 0.0
     @State var time: Int = 0
     
+    @State var initialSize: [Double] = []
     @State var shapeSize: [Double] = []
     @State var lastRemaining: Float = 0.0
     
@@ -127,7 +128,8 @@ struct PlayBarView: View {
         self.musicModel = musicModel
         self.variation = variation
         self.time = time
-        self._shapeSize = State(initialValue: (0..<self.barCount).map { _ in self.arr[Int.random(in: 0...4)] })
+        self._initialSize = State(initialValue: (0..<self.barCount).map { _ in self.arr[Int.random(in: 0...4)] })
+        self._shapeSize = self._initialSize
     }
     
     
@@ -156,6 +158,19 @@ struct PlayBarView: View {
                 }
                 .onAppear{
                     Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { _ in
+                        
+                        if musicModel.playing == false{
+                            withAnimation(.spring(response:0.4, dampingFraction: 0.8, blendDuration: 1.0)){
+                                self.shapeSize = (0..<self.barCount).map { _ in self.arr[Int.random(in: 0...0)]
+                                }
+                            }
+                        }
+                        else {
+                            withAnimation(.spring(dampingFraction: 0.6)){
+                                self.shapeSize = self.initialSize
+                            }
+                        }
+                        
                         time = Int(musicModel.calculateProgress(curTime: musicModel.curTime) * Float(barCount))
                         let remaining = (musicModel.calculateProgress(curTime: musicModel.curTime) * Float(barCount)).truncatingRemainder(dividingBy:1)
                         withAnimation(.linear(duration: 0.01)){
