@@ -98,40 +98,46 @@ struct PlayBarView: View {
     
     
     var body: some View {
-        HStack(){
-            ForEach(0..<barCount, id: \.self) { i in
-                shape(size: shapeSize[i])
-                    .fill(i == time ? LinearGradient(
-                        gradient: .init(colors: [.orange, .gray]),
-                        startPoint: UnitPoint(x:variation*2-0.5, y:0.5),
-                        endPoint: UnitPoint(x:variation*2+0.5, y:0.5)
-                    ) : (i < time ? LinearGradient(
-                        gradient: .init(colors: [.orange, .orange]),
-                        startPoint: .top,
-                        endPoint: .bottom
-                      ) : LinearGradient(
-                        gradient: .init(colors: [.gray, .gray]),
-                        startPoint: .top,
-                        endPoint: .bottom
-                      )))
-                    .offset(x:0, y:(40-20-shapeSize[i])/2)
+        GeometryReader { geo in
+            HStack(){
+                ForEach(0..<barCount, id: \.self) { i in
+                    shape(size: shapeSize[i])
+                        .fill(i == time ? LinearGradient(
+                            gradient: .init(colors: [.orange, .gray]),
+                            startPoint: UnitPoint(x:variation*2-0.5, y:0.5),
+                            endPoint: UnitPoint(x:variation*2+0.5, y:0.5)
+                        ) : (i < time ? LinearGradient(
+                            gradient: .init(colors: [.orange, .orange]),
+                            startPoint: .top,
+                            endPoint: .bottom
+                        ) : LinearGradient(
+                            gradient: .init(colors: [.gray, .gray]),
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )))
+                        .offset(x:0, y:(40-20-shapeSize[i])/2)
+                }
             }
-        }.onAppear{
-            
-            Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { _ in
-                time = Int(musicModel.calculateProgress(duration: musicModel.duration) * Float(barCount))
-                let remaining = (musicModel.calculateProgress(duration: musicModel.duration) * Float(barCount)).truncatingRemainder(dividingBy:1)
-                withAnimation(.linear(duration: 0.01)){
-                    if lastRemaining < remaining{
-                        variation = Double(remaining)
+            .onAppear{
+                Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { _ in
+                    time = Int(musicModel.calculateProgress(curTime: musicModel.curTime) * Float(barCount))
+                    let remaining = (musicModel.calculateProgress(curTime: musicModel.curTime) * Float(barCount)).truncatingRemainder(dividingBy:1)
+                    withAnimation(.linear(duration: 0.01)){
+                        if lastRemaining < remaining{
+                            variation = Double(remaining)
+                        }
                     }
+                    if lastRemaining > remaining {
+                        variation = 0.0
+                        lastRemaining = 0.0
+                    }
+                    lastRemaining = remaining
                 }
-                if lastRemaining > remaining {
-                    variation = 0.0
-                    lastRemaining = 0.0
-                }
-                lastRemaining = remaining
-                print(variation)
+            }
+            .onTapGesture (coordinateSpace: .local) { location in
+                let curPer = min(max(location.x / geo.size.width,0),1)
+                print("Tapped at \(location.x / geo.size.width)\n \(curPer * musicModel.duration)")
+                musicModel.seek(time: curPer * musicModel.duration)
             }
         }
     }

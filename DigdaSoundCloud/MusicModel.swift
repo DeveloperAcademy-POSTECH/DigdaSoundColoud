@@ -30,16 +30,20 @@ class MusicModel: ObservableObject {
     }
     
     
-    var duration: Double {
+    var curTime: Double {
         return audioPlayer.currentTime
     }
     
-    func calculateProgress(duration: Double) -> Float {
-        return Float(duration / audioPlayer.duration)
+    var duration: Double {
+        return audioPlayer.duration
+    }
+    
+    func calculateProgress(curTime: Double) -> Float {
+        return Float(curTime / duration)
     }
     
     func seek(time: TimeInterval) {
-        audioPlayer.play(atTime: time)
+        audioPlayer.currentTime = time
     }
     
     private func convertFloatToCMTime(_ percentage: Float) -> CMTime {
