@@ -140,8 +140,8 @@ struct PlayBarView: View {
                         shape(size: shapeSize[i])
                             .fill(i == time ? LinearGradient(
                                 gradient: .init(colors: [.orange,.musicBar]),
-                                startPoint: UnitPoint(x:variation*2-0.5, y:0.5),
-                                endPoint: UnitPoint(x:variation*2+0.5, y:0.5)
+                                startPoint: UnitPoint(x:variation*4-0.5, y:0.5),
+                                endPoint: UnitPoint(x:variation*4+0.5, y:0.5)
                             ) : (i < time ? LinearGradient(
                                 gradient: .init(colors: [.orange, .orange]),
                                 startPoint: .top,
