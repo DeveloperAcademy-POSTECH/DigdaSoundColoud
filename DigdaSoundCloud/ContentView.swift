@@ -170,7 +170,11 @@ struct PlayBarView: View {
                         lastRemaining = remaining
                         
                     }
-                }
+                }.gesture(DragGesture(coordinateSpace: .local)
+                    .onChanged { gesture in
+                        let curPer = min(max(gesture.location.x / geo.size.width,0),1)
+                        musicModel.seek(time: curPer * musicModel.duration)
+                    })
                 .onTapGesture (coordinateSpace: .local) { location in
                     let curPer = min(max(location.x / geo.size.width,0),1)
                     print("Tapped at \(location.x / geo.size.width)\n \(curPer * musicModel.duration)")
