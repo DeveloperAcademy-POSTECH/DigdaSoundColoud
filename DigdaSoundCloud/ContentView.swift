@@ -8,7 +8,7 @@
 import SwiftUI
 import AVKit
 
-let WIDTH: CGFloat = 327 // edit please
+let WIDTH: CGFloat = 338 // edit please
 
 struct InfoView: View {
     
@@ -23,10 +23,10 @@ struct InfoView: View {
                     .font(.system(size: 17))
                     .fontWeight(.semibold)
                     .foregroundColor(.white)
-                    .opacity(0.8)
+                    .opacity(0.8).offset(x:2)
             }
             Spacer()
-            Image(systemName: "ellipsis.circle.fill").foregroundColor(.white).font(.system(size: 30))
+            Image(systemName: "ellipsis.circle.fill").foregroundColor(.white).font(.system(size: 25))
         }.frame(width: WIDTH)
     }
 }
@@ -36,26 +36,60 @@ struct IconView: View {
     
     var body: some View {
         HStack{
-            Image(systemName: "heart").foregroundColor(.white).font(.system(size: 18)).fontWeight(.heavy)
+            Image(systemName: "heart").foregroundColor(.white).font(.system(size: 22))
             Spacer()
-            Image(systemName: "text.bubble").foregroundColor(.white).font(.system(size: 18)).fontWeight(.heavy)
+            Image(systemName: "text.bubble").foregroundColor(.white).font(.system(size: 22))
             Spacer()
-            Image(systemName: "square.and.arrow.up").foregroundColor(.white).font(.system(size: 18)).fontWeight(.heavy)
+            Image(systemName: "square.and.arrow.up").foregroundColor(.white).font(.system(size: 22))
             Spacer()
-            Image(systemName: "list.bullet").foregroundColor(.white).font(.system(size: 18)).fontWeight(.heavy)
+            Image(systemName: "list.bullet").foregroundColor(.white).font(.system(size: 22))
         }.frame(width: WIDTH)
     }
 }
 
 
 struct CommentView: View {
+    @Binding var time: Int
     
     var body: some View {
         HStack(spacing: 15){
-            Circle()
-                .foregroundColor(Color(red:65/255, green:65/255, blue:65/255))
-            RoundedRectangle(cornerRadius: 10)
-                .foregroundColor(Color(red:65/255, green:65/255, blue:65/255))
+            
+            if (time == 14)
+            {
+                Image("dog").resizable().scaledToFit().mask{
+                    Circle()
+                    .foregroundColor(Color(red:65/255, green:65/255, blue:65/255))
+                }
+                    RoundedRectangle(cornerRadius: 8)
+                    .foregroundColor(Color(red:65/255, green:65/255, blue:65/255)).opacity(0.7)
+                    .frame(width: 130, height: 35)
+                    .overlay {
+                        Text("Mung loves dat!").foregroundColor(.white).opacity(0.95)
+                            
+                            .fontWeight(.light)
+                            .font(.system(size: 14))
+                    }
+                                
+            } else if (time == 10) {
+                
+                Image("luime").resizable().scaledToFit().mask{
+                    Circle()
+                    .foregroundColor(Color(red:65/255, green:65/255, blue:65/255))
+                }
+                    RoundedRectangle(cornerRadius: 8)
+                    .foregroundColor(Color(red:65/255, green:65/255, blue:65/255)).opacity(0.7)
+                    .frame(width: 130, height: 35)
+                    .overlay {
+                        Text("Feelin the vibeee!").foregroundColor(.white).opacity(0.95)
+                            
+                            .fontWeight(.light)
+                            .font(.system(size: 14))
+                    }
+                
+                
+            } else {
+                Color.clear.frame(width: 130, height: 35)
+            }
         }
         .frame(height: 40)
     }
@@ -63,7 +97,7 @@ struct CommentView: View {
 
 struct shape: Shape {
     var size: Double
-    let width = 8.0
+    let width = 6.0
     
     func path(in rect: CGRect) -> Path {
         let path = UIBezierPath()
@@ -81,7 +115,7 @@ struct PlayBarView: View {
     @ObservedObject var musicModel: MusicModel
     
     let barCount = 26
-    let arr: [Double] = [8.0, 16.0, 24.0, 32.0, 40.0]
+    let arr: [Double] = [8.0, 16.0, 32.0, 40.0, 54.0]
     
     @State var variation = 0.0
     @State var time: Int = 0
@@ -98,46 +132,50 @@ struct PlayBarView: View {
     
     
     var body: some View {
-        GeometryReader { geo in
-            HStack(){
-                ForEach(0..<barCount, id: \.self) { i in
-                    shape(size: shapeSize[i])
-                        .fill(i == time ? LinearGradient(
-                            gradient: .init(colors: [.orange, .gray]),
-                            startPoint: UnitPoint(x:variation*2-0.5, y:0.5),
-                            endPoint: UnitPoint(x:variation*2+0.5, y:0.5)
-                        ) : (i < time ? LinearGradient(
-                            gradient: .init(colors: [.orange, .orange]),
-                            startPoint: .top,
-                            endPoint: .bottom
-                        ) : LinearGradient(
-                            gradient: .init(colors: [.gray, .gray]),
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )))
-                        .offset(x:0, y:(40-20-shapeSize[i])/2)
+        VStack(spacing: 30) {
+            CommentView(time: $time)
+            GeometryReader { geo in
+                HStack(){
+                    ForEach(0..<barCount, id: \.self) { i in
+                        shape(size: shapeSize[i])
+                            .fill(i == time ? LinearGradient(
+                                gradient: .init(colors: [.orange,.gray]),
+                                startPoint: UnitPoint(x:variation*2-0.5, y:0.5),
+                                endPoint: UnitPoint(x:variation*2+0.5, y:0.5)
+                            ) : (i < time ? LinearGradient(
+                                gradient: .init(colors: [.orange, .orange]),
+                                startPoint: .top,
+                                endPoint: .bottom
+                            ) : LinearGradient(
+                                gradient: .init(colors: [.gray, .gray]),
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )))
+                            .offset(x:0, y:(40-20-shapeSize[i])/2)
+                    }
                 }
-            }
-            .onAppear{
-                Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { _ in
-                    time = Int(musicModel.calculateProgress(curTime: musicModel.curTime) * Float(barCount))
-                    let remaining = (musicModel.calculateProgress(curTime: musicModel.curTime) * Float(barCount)).truncatingRemainder(dividingBy:1)
-                    withAnimation(.linear(duration: 0.01)){
-                        if lastRemaining < remaining{
-                            variation = Double(remaining)
+                .onAppear{
+                    Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { _ in
+                        time = Int(musicModel.calculateProgress(curTime: musicModel.curTime) * Float(barCount))
+                        let remaining = (musicModel.calculateProgress(curTime: musicModel.curTime) * Float(barCount)).truncatingRemainder(dividingBy:1)
+                        withAnimation(.linear(duration: 0.01)){
+                            if lastRemaining < remaining{
+                                variation = Double(remaining)
+                            }
                         }
+                        if lastRemaining > remaining {
+                            variation = 0.0
+                            lastRemaining = 0.0
+                        }
+                        lastRemaining = remaining
+                        
                     }
-                    if lastRemaining > remaining {
-                        variation = 0.0
-                        lastRemaining = 0.0
-                    }
-                    lastRemaining = remaining
                 }
-            }
-            .onTapGesture (coordinateSpace: .local) { location in
-                let curPer = min(max(location.x / geo.size.width,0),1)
-                print("Tapped at \(location.x / geo.size.width)\n \(curPer * musicModel.duration)")
-                musicModel.seek(time: curPer * musicModel.duration)
+                .onTapGesture (coordinateSpace: .local) { location in
+                    let curPer = min(max(location.x / geo.size.width,0),1)
+                    print("Tapped at \(location.x / geo.size.width)\n \(curPer * musicModel.duration)")
+                    musicModel.seek(time: curPer * musicModel.duration)
+                }
             }
         }
     }
@@ -147,8 +185,7 @@ struct PlayView: View {
     
     @StateObject var musicModel: MusicModel
     var body: some View {
-        VStack(spacing: 25){
-                CommentView()
+        VStack(spacing: 30){
                 PlayBarView(musicModel: musicModel)
                 HStack{
                     Text("0:00").font(.system(size: 12))
@@ -165,7 +202,7 @@ struct AlbumView: View {
     var body: some View {
         
             Image("albumCover").resizable()
-                .frame(width: 327, height: 327)
+                .frame(width: WIDTH, height: WIDTH)
                 .overlay{
                     Rectangle()
                         .stroke(.white, lineWidth: 1)
@@ -201,7 +238,7 @@ struct ContentView: View {
     var body: some View {
         ZStack{
             AlbumBackgroundView().ignoresSafeArea()
-            VStack(spacing: 25){
+            VStack(spacing: 18){
                 InfoView()
                 Spacer()
                 if musicModel.playing {
@@ -234,16 +271,15 @@ struct PauseView: View {
         HStack{
             
             Image(systemName: "backward.fill")
-                .foregroundColor(.white)
-                .font(.system(size: 30))
-                .fontWeight(.heavy)
+                .foregroundColor(.white).opacity(0.7)
+                .font(.system(size: 36))
+                
             
             Spacer()
  
             Image(systemName: "play.circle.fill")
-                .foregroundColor(.white)
-                .font(.system(size: 30))
-                .fontWeight(.heavy)
+                .foregroundColor(.white).opacity(0.7)
+                .font(.system(size: 56))
                 .onTapGesture {
                         musicModel.playing.toggle()
                 }
@@ -251,12 +287,11 @@ struct PauseView: View {
             Spacer()
             
             Image(systemName: "forward.fill")
-                .foregroundColor(.white)
-                .font(.system(size: 30))
-                .fontWeight(.heavy)
+                .foregroundColor(.white).opacity(0.7)
+                .font(.system(size: 36))
             
             
-        }.frame(width: WIDTH + 20, height: WIDTH)
+        }.frame(width: WIDTH, height: WIDTH)
 
     }
 }

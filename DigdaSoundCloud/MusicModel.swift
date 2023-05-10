@@ -19,6 +19,8 @@ class MusicModel: ObservableObject {
         self.playing = false
     }
     
+    
+    
     func play(){
         audioPlayer.play()
         playing = true
