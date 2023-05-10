@@ -15,15 +15,15 @@ struct InfoView: View {
     var body: some View {
         HStack(spacing: 22){
             VStack(alignment: .leading, spacing: 5){
-                Text("이것은제목입니")
+                Text("Colin")
                     .font(.system(size: 34))
                     .fontWeight(.bold)
                     .foregroundColor(.white)
-                Text("이것은가수입니다")
+                Text("Bye Bye Badman")
                     .font(.system(size: 17))
                     .fontWeight(.semibold)
                     .foregroundColor(.white)
-                    .opacity(0.8).offset(x:2)
+                    .opacity(0.8).offset(x:2.5)
             }
             Spacer()
             Image(systemName: "ellipsis.circle.fill").foregroundColor(.white).font(.system(size: 25))
@@ -54,7 +54,7 @@ struct CommentView: View {
     var body: some View {
         HStack(spacing: 15){
             
-            if (time == 14)
+            if (time >= 20 && time < 24)
             {
                 Image("dog").resizable().scaledToFit().mask{
                     Circle()
@@ -70,7 +70,7 @@ struct CommentView: View {
                             .font(.system(size: 14))
                     }
                                 
-            } else if (time == 10) {
+            } else if (time >= 10 && time < 14) {
                 
                 Image("luime").resizable().scaledToFit().mask{
                     Circle()
@@ -97,7 +97,7 @@ struct CommentView: View {
 
 struct shape: Shape {
     var size: Double
-    let width = 6.0
+    let width = 4.0
     
     func path(in rect: CGRect) -> Path {
         let path = UIBezierPath()
@@ -114,7 +114,7 @@ struct shape: Shape {
 struct PlayBarView: View {
     @ObservedObject var musicModel: MusicModel
     
-    let barCount = 26
+    let barCount = 40
     let arr: [Double] = [8.0, 16.0, 32.0, 40.0, 54.0]
     
     @State var variation = 0.0
@@ -139,7 +139,7 @@ struct PlayBarView: View {
                     ForEach(0..<barCount, id: \.self) { i in
                         shape(size: shapeSize[i])
                             .fill(i == time ? LinearGradient(
-                                gradient: .init(colors: [.orange,.gray]),
+                                gradient: .init(colors: [.orange,.musicBar]),
                                 startPoint: UnitPoint(x:variation*2-0.5, y:0.5),
                                 endPoint: UnitPoint(x:variation*2+0.5, y:0.5)
                             ) : (i < time ? LinearGradient(
@@ -147,7 +147,7 @@ struct PlayBarView: View {
                                 startPoint: .top,
                                 endPoint: .bottom
                             ) : LinearGradient(
-                                gradient: .init(colors: [.gray, .gray]),
+                                gradient: .init(colors: [.musicBar, .musicBar]),
                                 startPoint: .top,
                                 endPoint: .bottom
                             )))
@@ -298,4 +298,8 @@ struct PauseView: View {
         }.frame(width: WIDTH, height: WIDTH)
 
     }
+}
+
+extension Color {
+    static let musicBar = Color("musicBar")
 }
